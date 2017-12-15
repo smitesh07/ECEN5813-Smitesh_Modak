@@ -1,0 +1,138 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.main,"ax",%progbits
+  18              		.align	2
+  19              		.global	main
+  20              		.code	16
+  21              		.thumb_func
+  23              	main:
+  24              	.LFB0:
+  25              		.file 1 "../Sources/main.c"
+   1:../Sources/main.c **** /*
+   2:../Sources/main.c ****  * main implementation: use this 'C' sample to create your own application
+   3:../Sources/main.c ****  *
+   4:../Sources/main.c ****  */
+   5:../Sources/main.c **** 
+   6:../Sources/main.c **** 
+   7:../Sources/main.c **** #include "derivative.h" /* include peripheral declarations */
+   8:../Sources/main.c **** #include "mcg.h"
+   9:../Sources/main.c **** #include "Systick.h"
+  10:../Sources/main.c **** #include "Freedom.h"
+  11:../Sources/main.c **** #include "TPM1.h"
+  12:../Sources/main.c **** 
+  13:../Sources/main.c **** 
+  14:../Sources/main.c **** int main(void)
+  15:../Sources/main.c **** {
+  26              		.loc 1 15 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 82B0     		sub	sp, sp, #8
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_offset 16
+  36 0004 02AF     		add	r7, sp, #8
+  37              	.LCFI2:
+  38              		.cfi_def_cfa 7, 8
+  16:../Sources/main.c **** 	
+  17:../Sources/main.c **** 	pll_init(8000000, LOW_POWER, CRYSTAL,4,24,MCGOUT);
+  39              		.loc 1 17 0
+  40 0006 0F4B     		ldr	r3, .L5
+  41 0008 1822     		mov	r2, #24
+  42 000a 0092     		str	r2, [sp]
+  43 000c 0122     		mov	r2, #1
+  44 000e 0192     		str	r2, [sp, #4]
+  45 0010 181C     		mov	r0, r3
+  46 0012 0021     		mov	r1, #0
+  47 0014 0122     		mov	r2, #1
+  48 0016 0423     		mov	r3, #4
+  49 0018 FFF7FEFF 		bl	pll_init
+  18:../Sources/main.c **** 	//Core Clock is now at 48MHz using the 8MHZ Crystal
+  19:../Sources/main.c **** 
+  20:../Sources/main.c **** 	InitFreedom(); //This initializes the PORT I/O for the LED, etc on the Freedom board.
+  50              		.loc 1 20 0
+  51 001c FFF7FEFF 		bl	InitFreedom
+  21:../Sources/main.c **** 	
+  22:../Sources/main.c **** 	InitSysTick(); // Systick is now interrupting once a mS!
+  52              		.loc 1 22 0
+  53 0020 FFF7FEFF 		bl	InitSysTick
+  23:../Sources/main.c **** 	
+  24:../Sources/main.c **** 	InitTPM1();
+  54              		.loc 1 24 0
+  55 0024 FFF7FEFF 		bl	InitTPM1
+  56 0028 00E0     		b	.L3
+  57              	.L4:
+  25:../Sources/main.c **** 	
+  26:../Sources/main.c **** 	for(;;)
+  27:../Sources/main.c **** 	{	   
+  28:../Sources/main.c **** 		//TPM1 Ticker fires every 20mS.  50 Ticks means One seconds
+  29:../Sources/main.c **** 		if(TPM1_Ticker >= 50)
+  30:../Sources/main.c **** 		{
+  31:../Sources/main.c **** 			TPM1_Ticker =  0; //time to do something!  Reset the timing variable....
+  32:../Sources/main.c **** 			RED_LED_TOGGLE;
+  33:../Sources/main.c **** 		}
+  34:../Sources/main.c **** 	}
+  58              		.loc 1 34 0
+  59 002a C046     		mov	r8, r8
+  60              	.L3:
+  29:../Sources/main.c **** 		if(TPM1_Ticker >= 50)
+  61              		.loc 1 29 0
+  62 002c 064B     		ldr	r3, .L5+4
+  63 002e 1B68     		ldr	r3, [r3]
+  64 0030 312B     		cmp	r3, #49
+  65 0032 FAD9     		bls	.L4
+  31:../Sources/main.c **** 			TPM1_Ticker =  0; //time to do something!  Reset the timing variable....
+  66              		.loc 1 31 0
+  67 0034 044B     		ldr	r3, .L5+4
+  68 0036 0022     		mov	r2, #0
+  69 0038 1A60     		str	r2, [r3]
+  32:../Sources/main.c **** 			RED_LED_TOGGLE;
+  70              		.loc 1 32 0
+  71 003a 044B     		ldr	r3, .L5+8
+  72 003c 8022     		mov	r2, #128
+  73 003e D202     		lsl	r2, r2, #11
+  74 0040 DA60     		str	r2, [r3, #12]
+  75              		.loc 1 34 0
+  76 0042 F2E7     		b	.L4
+  77              	.L6:
+  78              		.align	2
+  79              	.L5:
+  80 0044 00127A00 		.word	8000000
+  81 0048 00000000 		.word	TPM1_Ticker
+  82 004c 40F00F40 		.word	1074786368
+  83              		.cfi_endproc
+  84              	.LFE0:
+  86              		.text
+  87              	.Letext0:
+  88              		.file 2 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/MKL25Z4.h
+  89              		.file 3 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+  90              		.file 4 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/TPM1.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\ehughes\AppData\Local\Temp\ccYu8gli.s:18     .text.main:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\ccYu8gli.s:23     .text.main:00000000 main
+C:\Users\ehughes\AppData\Local\Temp\ccYu8gli.s:80     .text.main:00000044 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+pll_init
+InitFreedom
+InitSysTick
+InitTPM1
+TPM1_Ticker

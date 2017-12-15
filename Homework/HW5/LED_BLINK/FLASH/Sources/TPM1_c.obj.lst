@@ -1,0 +1,267 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"TPM1.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	TPM1_Ticker
+  18              		.section	.bss.TPM1_Ticker,"aw",%nobits
+  19              		.align	2
+  22              	TPM1_Ticker:
+  23 0000 00000000 		.space	4
+  24              		.section	.text.FTM1_IRQHandler,"ax",%progbits
+  25              		.align	2
+  26              		.global	FTM1_IRQHandler
+  27              		.code	16
+  28              		.thumb_func
+  30              	FTM1_IRQHandler:
+  31              	.LFB0:
+  32              		.file 1 "../Sources/TPM1.c"
+   1:../Sources/TPM1.c **** #include "TPM1.h"
+   2:../Sources/TPM1.c **** #include "stdint.h"
+   3:../Sources/TPM1.c **** #include "derivative.h"
+   4:../Sources/TPM1.c **** #include "arm_cm0.h"
+   5:../Sources/TPM1.c **** 
+   6:../Sources/TPM1.c **** #define FTM1_CLOCK                                                                  (48000000)
+   7:../Sources/TPM1.c **** #define FTM1_CLK_PRESCALE                                  						     6// Prescale Selector value -
+   8:../Sources/TPM1.c **** #define FTM1_OVERFLOW_FREQUENCY 50  											  	// Desired Frequency of PWM Signal - Here 50Hz =>
+   9:../Sources/TPM1.c **** 																				    // use these to dial in servo steering to your particular servo
+  10:../Sources/TPM1.c **** 
+  11:../Sources/TPM1.c **** volatile uint32_t TPM1_Ticker = 0;
+  12:../Sources/TPM1.c **** 
+  13:../Sources/TPM1.c **** 
+  14:../Sources/TPM1.c **** void FTM1_IRQHandler()
+  15:../Sources/TPM1.c **** {
+  33              		.loc 1 15 0
+  34              		.cfi_startproc
+  35 0000 80B5     		push	{r7, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 7, -8
+  39              		.cfi_offset 14, -4
+  40 0002 00AF     		add	r7, sp, #0
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_register 7
+  16:../Sources/TPM1.c ****         //Clear the overflow mask if set.   According to the reference manual, we clear by writing 
+  17:../Sources/TPM1.c **** 		if(TPM1_SC & TPM_SC_TOF_MASK)
+  43              		.loc 1 17 0
+  44 0004 0B4B     		ldr	r3, .L4
+  45 0006 1B68     		ldr	r3, [r3]
+  46 0008 1A1C     		mov	r2, r3
+  47 000a 8023     		mov	r3, #128
+  48 000c 1340     		and	r3, r2
+  49 000e 05D0     		beq	.L2
+  18:../Sources/TPM1.c **** 		{
+  19:../Sources/TPM1.c **** 			TPM1_SC |= TPM_SC_TOF_MASK;
+  50              		.loc 1 19 0
+  51 0010 084B     		ldr	r3, .L4
+  52 0012 084A     		ldr	r2, .L4
+  53 0014 1268     		ldr	r2, [r2]
+  54 0016 8021     		mov	r1, #128
+  55 0018 0A43     		orr	r2, r1
+  56 001a 1A60     		str	r2, [r3]
+  57              	.L2:
+  20:../Sources/TPM1.c **** 		}
+  21:../Sources/TPM1.c **** 		
+  22:../Sources/TPM1.c **** 		if(TPM1_Ticker<0xFFFFFFFF)
+  58              		.loc 1 22 0
+  59 001c 064B     		ldr	r3, .L4+4
+  60 001e 1B68     		ldr	r3, [r3]
+  61 0020 0133     		add	r3, r3, #1
+  62 0022 04D0     		beq	.L1
+  23:../Sources/TPM1.c **** 			TPM1_Ticker++;
+  63              		.loc 1 23 0
+  64 0024 044B     		ldr	r3, .L4+4
+  65 0026 1B68     		ldr	r3, [r3]
+  66 0028 5A1C     		add	r2, r3, #1
+  67 002a 034B     		ldr	r3, .L4+4
+  68 002c 1A60     		str	r2, [r3]
+  69              	.L1:
+  24:../Sources/TPM1.c **** }
+  70              		.loc 1 24 0
+  71 002e BD46     		mov	sp, r7
+  72              		@ sp needed for prologue
+  73 0030 80BD     		pop	{r7, pc}
+  74              	.L5:
+  75 0032 C046     		.align	2
+  76              	.L4:
+  77 0034 00900340 		.word	1073975296
+  78 0038 00000000 		.word	TPM1_Ticker
+  79              		.cfi_endproc
+  80              	.LFE0:
+  82              		.section	.text.InitTPM1,"ax",%progbits
+  83              		.align	2
+  84              		.global	InitTPM1
+  85              		.code	16
+  86              		.thumb_func
+  88              	InitTPM1:
+  89              	.LFB1:
+  25:../Sources/TPM1.c **** 
+  26:../Sources/TPM1.c **** void InitTPM1()
+  27:../Sources/TPM1.c **** {
+  90              		.loc 1 27 0
+  91              		.cfi_startproc
+  92 0000 80B5     		push	{r7, lr}
+  93              	.LCFI2:
+  94              		.cfi_def_cfa_offset 8
+  95              		.cfi_offset 7, -8
+  96              		.cfi_offset 14, -4
+  97 0002 00AF     		add	r7, sp, #0
+  98              	.LCFI3:
+  99              		.cfi_def_cfa_register 7
+  28:../Sources/TPM1.c ****                
+  29:../Sources/TPM1.c ****                //Clock Setup for the TPM requires a couple steps.
+  30:../Sources/TPM1.c ****                
+  31:../Sources/TPM1.c ****    			
+  32:../Sources/TPM1.c ****                //1st,  set the clock mux
+  33:../Sources/TPM1.c ****                //See Page 124 of f the KL25 Sub-Family Reference Manual, Rev. 3, September 2012
+  34:../Sources/TPM1.c ****                SIM_SOPT2 |= SIM_SOPT2_PLLFLLSEL_MASK;// We Want MCGPLLCLK/2 (See Page 196 of the KL
+ 100              		.loc 1 34 0
+ 101 0004 204A     		ldr	r2, .L7
+ 102 0006 2049     		ldr	r1, .L7
+ 103 0008 204B     		ldr	r3, .L7+4
+ 104 000a CB58     		ldr	r3, [r1, r3]
+ 105 000c 8021     		mov	r1, #128
+ 106 000e 4902     		lsl	r1, r1, #9
+ 107 0010 1943     		orr	r1, r3
+ 108 0012 1E4B     		ldr	r3, .L7+4
+ 109 0014 D150     		str	r1, [r2, r3]
+  35:../Sources/TPM1.c ****                SIM_SOPT2 &= ~(SIM_SOPT2_TPMSRC_MASK);
+ 110              		.loc 1 35 0
+ 111 0016 1C4A     		ldr	r2, .L7
+ 112 0018 1B49     		ldr	r1, .L7
+ 113 001a 1C4B     		ldr	r3, .L7+4
+ 114 001c CB58     		ldr	r3, [r1, r3]
+ 115 001e 191C     		mov	r1, r3
+ 116 0020 1B4B     		ldr	r3, .L7+8
+ 117 0022 1940     		and	r1, r3
+ 118 0024 194B     		ldr	r3, .L7+4
+ 119 0026 D150     		str	r1, [r2, r3]
+  36:../Sources/TPM1.c ****                SIM_SOPT2 |= SIM_SOPT2_TPMSRC(1); //We want the MCGPLLCLK/2 (See Page 196 of the KL2
+ 120              		.loc 1 36 0
+ 121 0028 174A     		ldr	r2, .L7
+ 122 002a 1749     		ldr	r1, .L7
+ 123 002c 174B     		ldr	r3, .L7+4
+ 124 002e CB58     		ldr	r3, [r1, r3]
+ 125 0030 8021     		mov	r1, #128
+ 126 0032 4904     		lsl	r1, r1, #17
+ 127 0034 1943     		orr	r1, r3
+ 128 0036 154B     		ldr	r3, .L7+4
+ 129 0038 D150     		str	r1, [r2, r3]
+  37:../Sources/TPM1.c ****   
+  38:../Sources/TPM1.c **** 
+  39:../Sources/TPM1.c **** 				//Enable the Clock to the FTM1 Module
+  40:../Sources/TPM1.c **** 				//See Page 207 of f the KL25 Sub-Family Reference Manual, Rev. 3, September 2012
+  41:../Sources/TPM1.c **** 				SIM_SCGC6 |= SIM_SCGC6_TPM1_MASK; 
+ 130              		.loc 1 41 0
+ 131 003a 134A     		ldr	r2, .L7
+ 132 003c 1249     		ldr	r1, .L7
+ 133 003e 154B     		ldr	r3, .L7+12
+ 134 0040 CB58     		ldr	r3, [r1, r3]
+ 135 0042 8021     		mov	r1, #128
+ 136 0044 8904     		lsl	r1, r1, #18
+ 137 0046 1943     		orr	r1, r3
+ 138 0048 124B     		ldr	r3, .L7+12
+ 139 004a D150     		str	r1, [r2, r3]
+  42:../Sources/TPM1.c ****                
+  43:../Sources/TPM1.c ****                //The TPM Module has Clock.  Now set up the peripheral
+  44:../Sources/TPM1.c ****                
+  45:../Sources/TPM1.c ****                //Blow away the control registers to ensure that the counter is not running
+  46:../Sources/TPM1.c ****                TPM1_SC = 0;
+ 140              		.loc 1 46 0
+ 141 004c 124B     		ldr	r3, .L7+16
+ 142 004e 0022     		mov	r2, #0
+ 143 0050 1A60     		str	r2, [r3]
+  47:../Sources/TPM1.c ****                TPM1_CONF = 0;
+ 144              		.loc 1 47 0
+ 145 0052 114A     		ldr	r2, .L7+16
+ 146 0054 8423     		mov	r3, #132
+ 147 0056 0021     		mov	r1, #0
+ 148 0058 D150     		str	r1, [r2, r3]
+  48:../Sources/TPM1.c ****                
+  49:../Sources/TPM1.c ****                //While the counter is disabled we can setup the prescaler
+  50:../Sources/TPM1.c ****                
+  51:../Sources/TPM1.c ****                TPM1_SC = TPM_SC_PS(FTM1_CLK_PRESCALE);
+ 149              		.loc 1 51 0
+ 150 005a 0F4B     		ldr	r3, .L7+16
+ 151 005c 0622     		mov	r2, #6
+ 152 005e 1A60     		str	r2, [r3]
+  52:../Sources/TPM1.c ****                TPM1_SC |= TPM_SC_TOIE_MASK; //Enable Interrupts for the Timer Overflow
+ 153              		.loc 1 52 0
+ 154 0060 0D4B     		ldr	r3, .L7+16
+ 155 0062 0D4A     		ldr	r2, .L7+16
+ 156 0064 1268     		ldr	r2, [r2]
+ 157 0066 4021     		mov	r1, #64
+ 158 0068 0A43     		orr	r2, r1
+ 159 006a 1A60     		str	r2, [r3]
+  53:../Sources/TPM1.c ****                
+  54:../Sources/TPM1.c ****                //Setup the mod register to get the correct  Period
+  55:../Sources/TPM1.c ****                
+  56:../Sources/TPM1.c ****                TPM1_MOD = FTM1_CLOCK/(1<<(FTM1_CLK_PRESCALE+1))/FTM1_OVERFLOW_FREQUENCY;
+ 160              		.loc 1 56 0
+ 161 006c 0A4B     		ldr	r3, .L7+16
+ 162 006e 0B4A     		ldr	r2, .L7+20
+ 163 0070 9A60     		str	r2, [r3, #8]
+  57:../Sources/TPM1.c ****                
+  58:../Sources/TPM1.c ****                //Enable the TPM COunter
+  59:../Sources/TPM1.c ****                TPM1_SC |= TPM_SC_CMOD(1);
+ 164              		.loc 1 59 0
+ 165 0072 094B     		ldr	r3, .L7+16
+ 166 0074 084A     		ldr	r2, .L7+16
+ 167 0076 1268     		ldr	r2, [r2]
+ 168 0078 0821     		mov	r1, #8
+ 169 007a 0A43     		orr	r2, r1
+ 170 007c 1A60     		str	r2, [r3]
+  60:../Sources/TPM1.c ****                
+  61:../Sources/TPM1.c ****                //Enable TPM1 IRQ on the NVIC
+  62:../Sources/TPM1.c ****                enable_irq (INT_TPM1-16);
+ 171              		.loc 1 62 0
+ 172 007e 1220     		mov	r0, #18
+ 173 0080 FFF7FEFF 		bl	enable_irq
+  63:../Sources/TPM1.c ****               
+  64:../Sources/TPM1.c ****                               
+  65:../Sources/TPM1.c **** }
+ 174              		.loc 1 65 0
+ 175 0084 BD46     		mov	sp, r7
+ 176              		@ sp needed for prologue
+ 177 0086 80BD     		pop	{r7, pc}
+ 178              	.L8:
+ 179              		.align	2
+ 180              	.L7:
+ 181 0088 00700440 		.word	1074032640
+ 182 008c 04100000 		.word	4100
+ 183 0090 FFFFFFFC 		.word	-50331649
+ 184 0094 3C100000 		.word	4156
+ 185 0098 00900340 		.word	1073975296
+ 186 009c 4C1D0000 		.word	7500
+ 187              		.cfi_endproc
+ 188              	.LFE1:
+ 190              		.text
+ 191              	.Letext0:
+ 192              		.file 2 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 193              		.file 3 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/MKL25Z4.h
+ 194              		.file 4 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/TPM1.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 TPM1.c
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:22     .bss.TPM1_Ticker:00000000 TPM1_Ticker
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:19     .bss.TPM1_Ticker:00000000 $d
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:25     .text.FTM1_IRQHandler:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:30     .text.FTM1_IRQHandler:00000000 FTM1_IRQHandler
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:77     .text.FTM1_IRQHandler:00000034 $d
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:83     .text.InitTPM1:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:88     .text.InitTPM1:00000000 InitTPM1
+C:\Users\ehughes\AppData\Local\Temp\ccE4jIC7.s:181    .text.InitTPM1:00000088 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+enable_irq

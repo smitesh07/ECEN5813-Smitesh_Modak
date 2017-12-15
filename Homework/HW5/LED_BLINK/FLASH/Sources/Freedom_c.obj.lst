@@ -1,0 +1,148 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Freedom.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.InitFreedom,"ax",%progbits
+  18              		.align	2
+  19              		.global	InitFreedom
+  20              		.code	16
+  21              		.thumb_func
+  23              	InitFreedom:
+  24              	.LFB0:
+  25              		.file 1 "../Sources/Freedom.c"
+   1:../Sources/Freedom.c **** /*
+   2:../Sources/Freedom.c ****  * Freedom.c
+   3:../Sources/Freedom.c ****  *
+   4:../Sources/Freedom.c ****  *  Created on: Mar 19, 2013
+   5:../Sources/Freedom.c ****  *      Author: ehughes
+   6:../Sources/Freedom.c ****  */
+   7:../Sources/Freedom.c **** #include "Derivative.h"
+   8:../Sources/Freedom.c **** #include "Freedom.h"
+   9:../Sources/Freedom.c **** #include "derivative.h"
+  10:../Sources/Freedom.c **** 
+  11:../Sources/Freedom.c **** void InitFreedom()
+  12:../Sources/Freedom.c **** {
+  26              		.loc 1 12 0
+  27              		.cfi_startproc
+  28 0000 80B5     		push	{r7, lr}
+  29              	.LCFI0:
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 7, -8
+  32              		.cfi_offset 14, -4
+  33 0002 00AF     		add	r7, sp, #0
+  34              	.LCFI1:
+  35              		.cfi_def_cfa_register 7
+  13:../Sources/Freedom.c **** 
+  14:../Sources/Freedom.c **** 	//First order of business is to enable the Clocks to the ports!
+  15:../Sources/Freedom.c **** 	SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTD_MASK;
+  36              		.loc 1 15 0
+  37 0004 174A     		ldr	r2, .L2
+  38 0006 1749     		ldr	r1, .L2
+  39 0008 174B     		ldr	r3, .L2+4
+  40 000a CB58     		ldr	r3, [r1, r3]
+  41 000c A021     		mov	r1, #160
+  42 000e 4901     		lsl	r1, r1, #5
+  43 0010 1943     		orr	r1, r3
+  44 0012 154B     		ldr	r3, .L2+4
+  45 0014 D150     		str	r1, [r2, r3]
+  16:../Sources/Freedom.c **** 	
+  17:../Sources/Freedom.c **** 	
+  18:../Sources/Freedom.c **** 	//Now,  setup the port mux for GPIO! See Page 163 and 183 of KL25 Sub-Family Reference Manual, Rev
+  19:../Sources/Freedom.c **** 	PORTB_PCR18 = PORT_PCR_MUX(1) | PORT_PCR_DSE_MASK;
+  46              		.loc 1 19 0
+  47 0016 154B     		ldr	r3, .L2+8
+  48 0018 A022     		mov	r2, #160
+  49 001a 5200     		lsl	r2, r2, #1
+  50 001c 9A64     		str	r2, [r3, #72]
+  20:../Sources/Freedom.c **** 	PORTB_PCR19 = PORT_PCR_MUX(1) | PORT_PCR_DSE_MASK;
+  51              		.loc 1 20 0
+  52 001e 134B     		ldr	r3, .L2+8
+  53 0020 A022     		mov	r2, #160
+  54 0022 5200     		lsl	r2, r2, #1
+  55 0024 DA64     		str	r2, [r3, #76]
+  21:../Sources/Freedom.c **** 	PORTD_PCR1 = PORT_PCR_MUX(1) | PORT_PCR_DSE_MASK;
+  56              		.loc 1 21 0
+  57 0026 124B     		ldr	r3, .L2+12
+  58 0028 A022     		mov	r2, #160
+  59 002a 5200     		lsl	r2, r2, #1
+  60 002c 5A60     		str	r2, [r3, #4]
+  22:../Sources/Freedom.c **** 	
+  23:../Sources/Freedom.c **** 	
+  24:../Sources/Freedom.c **** 	//Set the GPIO to outputs in the data direction register
+  25:../Sources/Freedom.c **** 	//See Page 778 of KL25 Sub-Family Reference Manual, Rev. 3, September 2012 
+  26:../Sources/Freedom.c **** 	GPIOB_PDDR |=  RED_LED_LOC | GREEN_LED_LOC;
+  61              		.loc 1 26 0
+  62 002e 114B     		ldr	r3, .L2+16
+  63 0030 104A     		ldr	r2, .L2+16
+  64 0032 5269     		ldr	r2, [r2, #20]
+  65 0034 C021     		mov	r1, #192
+  66 0036 0903     		lsl	r1, r1, #12
+  67 0038 0A43     		orr	r2, r1
+  68 003a 5A61     		str	r2, [r3, #20]
+  27:../Sources/Freedom.c **** 	GPIOD_PDDR |=  BLUE_LED_LOC;
+  69              		.loc 1 27 0
+  70 003c 0E4B     		ldr	r3, .L2+20
+  71 003e 0E4A     		ldr	r2, .L2+20
+  72 0040 5269     		ldr	r2, [r2, #20]
+  73 0042 0221     		mov	r1, #2
+  74 0044 0A43     		orr	r2, r1
+  75 0046 5A61     		str	r2, [r3, #20]
+  28:../Sources/Freedom.c **** 	
+  29:../Sources/Freedom.c **** 	BLUE_LED_OFF;
+  76              		.loc 1 29 0
+  77 0048 0B4B     		ldr	r3, .L2+20
+  78 004a 0222     		mov	r2, #2
+  79 004c 5A60     		str	r2, [r3, #4]
+  30:../Sources/Freedom.c **** 	GREEN_LED_OFF;
+  80              		.loc 1 30 0
+  81 004e 094B     		ldr	r3, .L2+16
+  82 0050 8022     		mov	r2, #128
+  83 0052 1203     		lsl	r2, r2, #12
+  84 0054 5A60     		str	r2, [r3, #4]
+  31:../Sources/Freedom.c **** 	RED_LED_OFF;
+  85              		.loc 1 31 0
+  86 0056 074B     		ldr	r3, .L2+16
+  87 0058 8022     		mov	r2, #128
+  88 005a D202     		lsl	r2, r2, #11
+  89 005c 5A60     		str	r2, [r3, #4]
+  32:../Sources/Freedom.c **** 	
+  33:../Sources/Freedom.c **** }
+  90              		.loc 1 33 0
+  91 005e BD46     		mov	sp, r7
+  92              		@ sp needed for prologue
+  93 0060 80BD     		pop	{r7, pc}
+  94              	.L3:
+  95 0062 C046     		.align	2
+  96              	.L2:
+  97 0064 00700440 		.word	1074032640
+  98 0068 38100000 		.word	4152
+  99 006c 00A00440 		.word	1074044928
+ 100 0070 00C00440 		.word	1074053120
+ 101 0074 40F00F40 		.word	1074786368
+ 102 0078 C0F00F40 		.word	1074786496
+ 103              		.cfi_endproc
+ 104              	.LFE0:
+ 106              		.text
+ 107              	.Letext0:
+ 108              		.file 2 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 109              		.file 3 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/MKL25Z4.h
+DEFINED SYMBOLS
+                            *ABS*:00000000 Freedom.c
+C:\Users\ehughes\AppData\Local\Temp\cc0ZwdT7.s:18     .text.InitFreedom:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\cc0ZwdT7.s:23     .text.InitFreedom:00000000 InitFreedom
+C:\Users\ehughes\AppData\Local\Temp\cc0ZwdT7.s:97     .text.InitFreedom:00000064 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

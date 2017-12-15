@@ -1,0 +1,258 @@
+   1              		.cpu cortex-m0
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.code	16
+  13              		.file	"Systick.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.bss.DelayTimerTick,"aw",%nobits
+  18              		.align	2
+  21              	DelayTimerTick:
+  22 0000 00000000 		.space	4
+  23              		.comm	Ticker,16,4
+  24              		.section	.text.InitSysTick,"ax",%progbits
+  25              		.align	2
+  26              		.global	InitSysTick
+  27              		.code	16
+  28              		.thumb_func
+  30              	InitSysTick:
+  31              	.LFB0:
+  32              		.file 1 "../Sources/Systick.c"
+   1:../Sources/Systick.c **** #include "Derivative.h"
+   2:../Sources/Systick.c **** #include "Systick.h"
+   3:../Sources/Systick.c **** #include "mcg.h"
+   4:../Sources/Systick.c **** 
+   5:../Sources/Systick.c **** static volatile unsigned int DelayTimerTick = 0;
+   6:../Sources/Systick.c **** 
+   7:../Sources/Systick.c **** volatile unsigned int Ticker[4];
+   8:../Sources/Systick.c **** 
+   9:../Sources/Systick.c **** //Since this SysTick is part of the Cortex M0 Core,   you need to look in the 
+  10:../Sources/Systick.c **** //Cortex M0 Generic Users Guide (ARM DUI 0497A)
+  11:../Sources/Systick.c **** 
+  12:../Sources/Systick.c **** //See Section 4.4
+  13:../Sources/Systick.c **** void InitSysTick()
+  14:../Sources/Systick.c **** {
+  33              		.loc 1 14 0
+  34              		.cfi_startproc
+  35 0000 80B5     		push	{r7, lr}
+  36              	.LCFI0:
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 7, -8
+  39              		.cfi_offset 14, -4
+  40 0002 00AF     		add	r7, sp, #0
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_register 7
+  15:../Sources/Systick.c **** 	
+  16:../Sources/Systick.c **** 	
+  17:../Sources/Systick.c **** 	SYST_RVR = CORE_CLOCK/SYSTICK_FREQUENCY; // Set the Reload to the interrupt at our desired frequen
+  43              		.loc 1 17 0
+  44 0004 054B     		ldr	r3, .L2
+  45 0006 064A     		ldr	r2, .L2+4
+  46 0008 5A60     		str	r2, [r3, #4]
+  18:../Sources/Systick.c **** 	SYST_CVR = 0; // Reset the Current Value
+  47              		.loc 1 18 0
+  48 000a 044B     		ldr	r3, .L2
+  49 000c 0022     		mov	r2, #0
+  50 000e 9A60     		str	r2, [r3, #8]
+  19:../Sources/Systick.c **** 	SYST_CSR = SysTick_CSR_ENABLE_MASK | SysTick_CSR_TICKINT_MASK | SysTick_CSR_CLKSOURCE_MASK;
+  51              		.loc 1 19 0
+  52 0010 024B     		ldr	r3, .L2
+  53 0012 0722     		mov	r2, #7
+  54 0014 1A60     		str	r2, [r3]
+  20:../Sources/Systick.c **** 
+  21:../Sources/Systick.c **** 	//Important!  Since the Systick is part of the Cortex core and NOT a kinetis peripheral
+  22:../Sources/Systick.c **** 	// its Interrupt line is not passed through NVIC.   You need to make sure that
+  23:../Sources/Systick.c **** 	//the SysTickIRQ function is populated in the vector table.  See the kinetis_sysinit.c file
+  24:../Sources/Systick.c **** }
+  55              		.loc 1 24 0
+  56 0016 BD46     		mov	sp, r7
+  57              		@ sp needed for prologue
+  58 0018 80BD     		pop	{r7, pc}
+  59              	.L3:
+  60 001a C046     		.align	2
+  61              	.L2:
+  62 001c 10E000E0 		.word	-536813552
+  63 0020 80BB0000 		.word	48000
+  64              		.cfi_endproc
+  65              	.LFE0:
+  67              		.section	.text.SysTick_Handler,"ax",%progbits
+  68              		.align	2
+  69              		.global	SysTick_Handler
+  70              		.code	16
+  71              		.thumb_func
+  73              	SysTick_Handler:
+  74              	.LFB1:
+  25:../Sources/Systick.c **** 
+  26:../Sources/Systick.c **** void SysTick_Handler()
+  27:../Sources/Systick.c **** {
+  75              		.loc 1 27 0
+  76              		.cfi_startproc
+  77 0000 80B5     		push	{r7, lr}
+  78              	.LCFI2:
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 82B0     		sub	sp, sp, #8
+  83              	.LCFI3:
+  84              		.cfi_def_cfa_offset 16
+  85 0004 00AF     		add	r7, sp, #0
+  86              	.LCFI4:
+  87              		.cfi_def_cfa_register 7
+  28:../Sources/Systick.c **** 	unsigned int i;
+  29:../Sources/Systick.c **** 	
+  30:../Sources/Systick.c **** 	if(DelayTimerTick<0xFFFFFFFF)
+  88              		.loc 1 30 0
+  89 0006 124B     		ldr	r3, .L9
+  90 0008 1B68     		ldr	r3, [r3]
+  91 000a 0133     		add	r3, r3, #1
+  92 000c 04D0     		beq	.L5
+  31:../Sources/Systick.c **** 	{
+  32:../Sources/Systick.c **** 		DelayTimerTick++;
+  93              		.loc 1 32 0
+  94 000e 104B     		ldr	r3, .L9
+  95 0010 1B68     		ldr	r3, [r3]
+  96 0012 5A1C     		add	r2, r3, #1
+  97 0014 0E4B     		ldr	r3, .L9
+  98 0016 1A60     		str	r2, [r3]
+  99              	.L5:
+  33:../Sources/Systick.c **** 	}
+  34:../Sources/Systick.c **** 	
+  35:../Sources/Systick.c **** 	for(i=0;i<4;i++)
+ 100              		.loc 1 35 0
+ 101 0018 0023     		mov	r3, #0
+ 102 001a 7B60     		str	r3, [r7, #4]
+ 103 001c 11E0     		b	.L6
+ 104              	.L8:
+  36:../Sources/Systick.c **** 	{
+  37:../Sources/Systick.c **** 		if(Ticker[i]<0xFFFFFFFF)
+ 105              		.loc 1 37 0
+ 106 001e 0D4B     		ldr	r3, .L9+4
+ 107 0020 7A68     		ldr	r2, [r7, #4]
+ 108 0022 9200     		lsl	r2, r2, #2
+ 109 0024 D358     		ldr	r3, [r2, r3]
+ 110 0026 0133     		add	r3, r3, #1
+ 111 0028 08D0     		beq	.L7
+  38:../Sources/Systick.c **** 			{
+  39:../Sources/Systick.c **** 				Ticker[i]++;
+ 112              		.loc 1 39 0
+ 113 002a 0A4B     		ldr	r3, .L9+4
+ 114 002c 7A68     		ldr	r2, [r7, #4]
+ 115 002e 9200     		lsl	r2, r2, #2
+ 116 0030 D358     		ldr	r3, [r2, r3]
+ 117 0032 591C     		add	r1, r3, #1
+ 118 0034 074B     		ldr	r3, .L9+4
+ 119 0036 7A68     		ldr	r2, [r7, #4]
+ 120 0038 9200     		lsl	r2, r2, #2
+ 121 003a D150     		str	r1, [r2, r3]
+ 122              	.L7:
+  35:../Sources/Systick.c **** 	for(i=0;i<4;i++)
+ 123              		.loc 1 35 0
+ 124 003c 7B68     		ldr	r3, [r7, #4]
+ 125 003e 0133     		add	r3, r3, #1
+ 126 0040 7B60     		str	r3, [r7, #4]
+ 127              	.L6:
+  35:../Sources/Systick.c **** 	for(i=0;i<4;i++)
+ 128              		.loc 1 35 0 is_stmt 0 discriminator 1
+ 129 0042 7B68     		ldr	r3, [r7, #4]
+ 130 0044 032B     		cmp	r3, #3
+ 131 0046 EAD9     		bls	.L8
+  40:../Sources/Systick.c **** 			}
+  41:../Sources/Systick.c **** 	}
+  42:../Sources/Systick.c **** }
+ 132              		.loc 1 42 0 is_stmt 1
+ 133 0048 BD46     		mov	sp, r7
+ 134 004a 02B0     		add	sp, sp, #8
+ 135              		@ sp needed for prologue
+ 136 004c 80BD     		pop	{r7, pc}
+ 137              	.L10:
+ 138 004e C046     		.align	2
+ 139              	.L9:
+ 140 0050 00000000 		.word	DelayTimerTick
+ 141 0054 00000000 		.word	Ticker
+ 142              		.cfi_endproc
+ 143              	.LFE1:
+ 145              		.section	.text.Delay_mS,"ax",%progbits
+ 146              		.align	2
+ 147              		.global	Delay_mS
+ 148              		.code	16
+ 149              		.thumb_func
+ 151              	Delay_mS:
+ 152              	.LFB2:
+  43:../Sources/Systick.c **** 
+  44:../Sources/Systick.c **** void Delay_mS(unsigned int TicksIn_mS)
+  45:../Sources/Systick.c **** {
+ 153              		.loc 1 45 0
+ 154              		.cfi_startproc
+ 155 0000 80B5     		push	{r7, lr}
+ 156              	.LCFI5:
+ 157              		.cfi_def_cfa_offset 8
+ 158              		.cfi_offset 7, -8
+ 159              		.cfi_offset 14, -4
+ 160 0002 82B0     		sub	sp, sp, #8
+ 161              	.LCFI6:
+ 162              		.cfi_def_cfa_offset 16
+ 163 0004 00AF     		add	r7, sp, #0
+ 164              	.LCFI7:
+ 165              		.cfi_def_cfa_register 7
+ 166 0006 7860     		str	r0, [r7, #4]
+  46:../Sources/Systick.c **** 	DelayTimerTick = 0;
+ 167              		.loc 1 46 0
+ 168 0008 054B     		ldr	r3, .L13
+ 169 000a 0022     		mov	r2, #0
+ 170 000c 1A60     		str	r2, [r3]
+  47:../Sources/Systick.c **** 
+  48:../Sources/Systick.c **** 	while(DelayTimerTick<TicksIn_mS)
+ 171              		.loc 1 48 0
+ 172 000e C046     		mov	r8, r8
+ 173              	.L12:
+ 174              		.loc 1 48 0 is_stmt 0 discriminator 1
+ 175 0010 034B     		ldr	r3, .L13
+ 176 0012 1A68     		ldr	r2, [r3]
+ 177 0014 7B68     		ldr	r3, [r7, #4]
+ 178 0016 9A42     		cmp	r2, r3
+ 179 0018 FAD3     		bcc	.L12
+  49:../Sources/Systick.c **** 	{
+  50:../Sources/Systick.c **** 	}
+  51:../Sources/Systick.c **** }
+ 180              		.loc 1 51 0 is_stmt 1
+ 181 001a BD46     		mov	sp, r7
+ 182 001c 02B0     		add	sp, sp, #8
+ 183              		@ sp needed for prologue
+ 184 001e 80BD     		pop	{r7, pc}
+ 185              	.L14:
+ 186              		.align	2
+ 187              	.L13:
+ 188 0020 00000000 		.word	DelayTimerTick
+ 189              		.cfi_endproc
+ 190              	.LFE2:
+ 192              		.text
+ 193              	.Letext0:
+ 194              		.file 2 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/MKL25Z4.h
+ 195              		.file 3 "C:/Freescale/CW MCU v10.3/MCU/ARM_GCC_Support/ewl/EWL_C/include/cstdint"
+ 196              		.file 4 "D:/Freescale Demos/struct/Interrupts/Interrupts - Timer/TPM_IRQ/Project_Headers/Systick.h
+DEFINED SYMBOLS
+                            *ABS*:00000000 Systick.c
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:18     .bss.DelayTimerTick:00000000 $d
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:21     .bss.DelayTimerTick:00000000 DelayTimerTick
+                            *COM*:00000010 Ticker
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:25     .text.InitSysTick:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:30     .text.InitSysTick:00000000 InitSysTick
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:62     .text.InitSysTick:0000001c $d
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:68     .text.SysTick_Handler:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:73     .text.SysTick_Handler:00000000 SysTick_Handler
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:140    .text.SysTick_Handler:00000050 $d
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:146    .text.Delay_mS:00000000 $t
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:151    .text.Delay_mS:00000000 Delay_mS
+C:\Users\ehughes\AppData\Local\Temp\ccYhS3HY.s:188    .text.Delay_mS:00000020 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS
