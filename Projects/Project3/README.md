@@ -1,6 +1,5 @@
 ## ECEN 5813- Principles of Embedded Softwares: Project 3
 ## Authors: Harsimransingh Bindra, Smitesh Modak
-Date: 10/29/2017
 
 Supported Platforms: Freedom Freescale KL25Z, HOST LINUX-Ubuntu.
 
