@@ -16,6 +16,8 @@ Implementations:
 Resources:
 
 ● KL25 Sub-Family Technical Reference Manual
+
 ● Making Embedded Systems (Elecia White)
+
 ● GCC inline keyword - https://gcc.gnu.org/onlinedocs/gcc-4.9.2/gcc/Inline.html
 
