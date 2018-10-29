@@ -1,6 +1,6 @@
-EN 5813- Principles of Embedded Softwares: Project 2
+## ECEN 5813- Principles of Embedded Softwares: Project 2
 
-Authors: Harsimransingh Bindra, Smitesh Modak
+## Authors: Harsimransingh Bindra, Smitesh Modak
 
 Date: 10/29/2017
 
